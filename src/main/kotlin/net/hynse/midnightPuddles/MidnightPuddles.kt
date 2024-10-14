@@ -58,6 +58,8 @@ class MidnightPuddles : JavaPlugin(), Listener {
 
     private fun spawnPuddle(player: Player, world: World) {
         val radius = 15
+        val playerPuddles = puddles.getOrPut(player.uniqueId) { mutableMapOf() }
+
         val playerLoc = player.location
         val location = Location(world,
             playerLoc.x + Random.nextInt(-radius, radius + 1),
@@ -66,8 +68,15 @@ class MidnightPuddles : JavaPlugin(), Listener {
         )
         val surfaceBlock = world.getHighestBlockAt(location)
 
+        val puddleLocation = IntLocation(world, surfaceBlock.x, surfaceBlock.y + 1, surfaceBlock.z)
+
+        // Check if a puddle already exists at this location
+        if (playerPuddles.containsKey(puddleLocation)) {
+            logger.info("Puddle already exists at $puddleLocation for player ${player.name}")
+            return // Skip spawning if a puddle already exists at this location
+        }
+
         if (isPuddleableBlock(surfaceBlock.type)) {
-            val puddleLocation = IntLocation(world, surfaceBlock.x, surfaceBlock.y + 1, surfaceBlock.z)
             val waterLevel = 7
             val duration = 20L * (10L + Random.nextLong(120L))
 
@@ -79,7 +88,10 @@ class MidnightPuddles : JavaPlugin(), Listener {
             startTimerUpdateTask(player, textDisplay, duration, puddleLocationDouble, waterLevel)
             val removalTask = schedulePuddleRemoval(player, puddleLocation, textDisplay, duration)
 
-            puddles.getOrPut(player.uniqueId) { mutableMapOf() }[puddleLocation] = removalTask
+            playerPuddles[puddleLocation] = removalTask
+            logger.info("Spawned puddle at $puddleLocation for player ${player.name}")
+        } else {
+            logger.info("Could not spawn puddle for player ${player.name} at $puddleLocation: Not a puddleable block")
         }
     }
 
