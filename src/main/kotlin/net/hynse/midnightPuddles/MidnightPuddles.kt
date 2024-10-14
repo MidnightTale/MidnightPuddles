@@ -157,8 +157,8 @@ class MidnightPuddles : JavaPlugin(), Listener {
     }
 
     private fun applySpeedBoost(player: Player) {
-        val attribute = player.getAttribute(Attribute.GENERIC_WATER_MOVEMENT_EFFICIENCY) ?: return
-        val modifier = AttributeModifier(modifierKey, 10.0, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
+        val attribute = player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) ?: return
+        val modifier = AttributeModifier(modifierKey, 0.1, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
 
         if (attribute.modifiers.none { it.name == modifierKey.key }) {
             attribute.addModifier(modifier)
@@ -171,7 +171,7 @@ class MidnightPuddles : JavaPlugin(), Listener {
     }
 
     private fun removeSpeedBoostCompletely(player: Player) {
-        player.getAttribute(Attribute.GENERIC_WATER_MOVEMENT_EFFICIENCY)?.let { attr ->
+        player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)?.let { attr ->
             attr.modifiers.find { it.name == modifierKey.key }?.let { attr.removeModifier(it) }
         }
     }
