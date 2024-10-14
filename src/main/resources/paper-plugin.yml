@@ -1,0 +1,4 @@
+name: MidnightPuddles
+version: '1.0-SNAPSHOT'
+main: net.hynse.midnightPuddles.MidnightPuddles
+api-version: '1.21'
